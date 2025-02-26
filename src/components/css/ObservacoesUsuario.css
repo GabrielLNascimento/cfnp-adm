@@ -1,0 +1,15 @@
+.container-observation {
+    padding: 20px;
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.container-observation ul {
+    width: 100%;
+}
