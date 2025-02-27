@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Route,
-    Routes,
-    Link,
-    Navigate,
-    useNavigate, // Importe useNavigate
-} from 'react-router-dom';
+import { Route, Routes, Link, Navigate, useNavigate } from 'react-router-dom';
 import './App.css';
 
 import UsuarioList from './components/UsuarioList';
@@ -21,35 +15,58 @@ const App = () => {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado para verificar autenticação
-    const navigate = useNavigate(); // useNavigate agora funciona corretamente
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const navigate = useNavigate();
 
-    // Função para buscar os usuários
+    // Função para buscar os usuários e suas observações
     const buscarUsuarios = async () => {
-        const token = localStorage.getItem('token'); // Recupera o token do localStorage
+        const token = localStorage.getItem('token');
 
         if (!token) {
-            setCarregando(false); // Atualiza o estado para evitar o loop
-            navigate('/login', { replace: true }); // Redireciona para a página de login
+            setCarregando(false);
+            navigate('/login', { replace: true });
             return;
         }
 
         try {
-            const resposta = await fetch(
+            // Busca os usuários
+            const respostaUsuarios = await fetch(
                 'https://api-cfnp.onrender.com/usuarios',
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
 
-            if (!resposta.ok) {
+            if (!respostaUsuarios.ok) {
                 throw new Error('Erro ao carregar usuários');
             }
 
-            const dados = await resposta.json();
-            setUsuarios(dados);
+            const usuarios = await respostaUsuarios.json();
+
+            // Para cada usuário, busca as observações
+            const usuariosComObservacoes = await Promise.all(
+                usuarios.map(async (usuario) => {
+                    const respostaObservacoes = await fetch(
+                        `https://api-cfnp.onrender.com/usuarios/cpf/${usuario.cpf}/observacoes`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+
+                    if (!respostaObservacoes.ok) {
+                        throw new Error('Erro ao carregar observações');
+                    }
+
+                    const observacoes = await respostaObservacoes.json();
+                    return { ...usuario, observacoes }; // Adiciona as observações ao usuário
+                })
+            );
+
+            setUsuarios(usuariosComObservacoes); // Atualiza o estado com os usuários e suas observações
         } catch (error) {
             setErro(error.message);
         } finally {
@@ -59,10 +76,10 @@ const App = () => {
 
     // Função para adicionar um usuário
     const adicionarUsuario = async (novoUsuario) => {
-        const token = localStorage.getItem('token'); // Recupera o token
+        const token = localStorage.getItem('token');
 
         if (!token) {
-            navigate('/login', { replace: true }); // Redireciona para o login se não houver token
+            navigate('/login', { replace: true });
             return;
         }
 
@@ -73,7 +90,7 @@ const App = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify(novoUsuario),
                 }
@@ -84,7 +101,7 @@ const App = () => {
             }
 
             const dados = await resposta.json();
-            console.log('Usuário adicionado:', dados); // Depuração
+            console.log('Usuário adicionado:', dados);
             await buscarUsuarios(); // Atualiza a lista de usuários
         } catch (error) {
             console.error('Erro:', error);
@@ -93,10 +110,10 @@ const App = () => {
 
     // Função para deletar um usuário
     const deletarUsuario = async (cpf) => {
-        const token = localStorage.getItem('token'); // Recupera o token do localStorage
+        const token = localStorage.getItem('token');
 
         if (!token) {
-            console.error('Token não encontrado. Redirecione para o login.'); // Depuração
+            console.error('Token não encontrado. Redirecione para o login.');
             return;
         }
 
@@ -106,7 +123,7 @@ const App = () => {
                 {
                     method: 'DELETE',
                     headers: {
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -123,16 +140,20 @@ const App = () => {
         }
     };
 
-    // Função para filtrar usuários por nome ou CPF
+    // Função para filtrar usuários por nome, CPF ou observações
     const filtrarUsuarios = (usuarios, termo) => {
-        if (!termo) return usuarios; // Retorna todos os usuários se não houver termo de pesquisa
+        if (!termo) return usuarios;
 
         return usuarios.filter((usuario) => {
             const nomeMatch = usuario.nome
                 .toLowerCase()
                 .includes(termo.toLowerCase());
             const cpfMatch = usuario.cpf.includes(termo);
-            return nomeMatch || cpfMatch; // Retorna true se o nome ou CPF corresponderem
+            const observacaoMatch = usuario.observacoes.some((observacao) =>
+                observacao.texto.toLowerCase().includes(termo.toLowerCase())
+            );
+
+            return nomeMatch || cpfMatch || observacaoMatch;
         });
     };
 
@@ -147,31 +168,31 @@ const App = () => {
 
     // Função para fazer logout
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Remove o token do localStorage
-        setIsAuthenticated(false); // Atualiza o estado de autenticação
-        navigate('/login', { replace: true }); // Redireciona para a página de login
+        localStorage.removeItem('token');
+        setIsAuthenticated(false);
+        navigate('/login', { replace: true });
     };
 
     // useEffect para buscar os usuários ao carregar o componente
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Verifica o token
+        const token = localStorage.getItem('token');
 
         if (token) {
-            setIsAuthenticated(true); // Define o estado de autenticação como true
-            buscarUsuarios(); // Chama buscarUsuarios apenas se houver token
+            setIsAuthenticated(true);
+            buscarUsuarios();
         } else {
-            console.log('Token não encontrado, redirecionando para /login'); // Depuração
-            setCarregando(false); // Atualiza o estado para evitar o loop
-            navigate('/login', { replace: true }); // Redireciona para o login se não houver token
+            console.log('Token não encontrado, redirecionando para /login');
+            setCarregando(false);
+            navigate('/login', { replace: true });
         }
     }, [navigate]);
 
     if (carregando) {
-        return <div>Carregando usuários...</div>;
+        return <div className='loading'>Carregando usuários...</div>;
     }
 
     if (erro) {
-        return <div>Erro: {erro}</div>;
+        return <div className='error'>Erro: {erro}</div>;
     }
 
     return (
@@ -179,7 +200,6 @@ const App = () => {
             <nav>
                 <h1>Alunos CFNP</h1>
                 <div>
-                    {/* Mostra os botões apenas se o usuário estiver autenticado */}
                     {isAuthenticated && (
                         <>
                             <Link to="/">
@@ -204,10 +224,8 @@ const App = () => {
             </nav>
 
             <Routes>
-                {/* Rota pública */}
                 <Route path="/login" element={<Login />} />
 
-                {/* Rotas protegidas */}
                 <Route
                     path="/"
                     element={
@@ -216,7 +234,7 @@ const App = () => {
                                 <div className="container-input">
                                     <input
                                         type="text"
-                                        placeholder="Pesquisar por nome ou CPF..."
+                                        placeholder="Pesquisar por nome, CPF ou observações..."
                                         value={termoPesquisa}
                                         onChange={(e) =>
                                             setTermoPesquisa(e.target.value)
@@ -267,7 +285,6 @@ const App = () => {
                     }
                 />
 
-                {/* Rota padrão para redirecionar para o login */}
                 <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
         </div>

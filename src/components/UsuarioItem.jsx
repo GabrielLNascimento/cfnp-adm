@@ -45,7 +45,7 @@ const UsuarioItem = ({ usuario, onDelete }) => {
 
     return (
         <li>
-            <div className="container-info">
+            <div className="container-aluno">
                 <span>
                     <strong>Nome:</strong> {usuario.nome}
                 </span>

@@ -86,11 +86,11 @@ const EditUser = ({ atualizarUsuario }) => {
     };
 
     if (carregando) {
-        return <div>Carregando...</div>;
+        return <div className='loading'>Carregando...</div>;
     }
 
     if (erro) {
-        return <div>Erro: {erro}</div>;
+        return <div className='error'>Erro: {erro}</div>;
     }
 
     return (

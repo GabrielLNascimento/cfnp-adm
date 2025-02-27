@@ -5,6 +5,8 @@ import './css/FormObservation.css';
 const FormObservation = () => {
     const { cpf } = useParams(); // Obtém o CPF da URL
     const [texto, setTexto] = useState(''); // Estado para armazenar o texto da observação
+    const [data, setData] = useState(''); // Estado para armazenar a data da observação
+    const [complemento, setComplemento] = useState(''); // Estado para armazenar o complemento da observação
     const [carregando, setCarregando] = useState(false); // Estado para controlar o carregamento
     const [erro, setErro] = useState(null); // Estado para armazenar erros
     const navigate = useNavigate(); // Hook para navegação
@@ -36,6 +38,9 @@ const FormObservation = () => {
             }
             const usuario = await respostaUsuario.json();
 
+            // Determinar o texto a ser enviado
+            const textoObservacao = texto === 'Outra' ? "Outro" : texto;
+
             // Enviar a observação para o backend
             const respostaObservacao = await fetch(
                 `https://api-cfnp.onrender.com/usuarios/cpf/${cpf}/observacoes`,
@@ -46,7 +51,9 @@ const FormObservation = () => {
                         Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
                     },
                     body: JSON.stringify({
-                        texto,
+                        texto: textoObservacao, // Usar o texto selecionado ou personalizado
+                        data,
+                        complemento,
                         usuarioId: usuario._id, // Usar o _id do usuário encontrado
                     }),
                 }
@@ -75,12 +82,55 @@ const FormObservation = () => {
             <h1>Adicionar Observação</h1>
             <form onSubmit={handleSubmit} className="form-observation">
                 <div>
-                    <label>Observação:</label>
-                    <textarea
+                    <label>Tipo de Observação:</label>
+                    <select
                         value={texto}
                         onChange={(e) => setTexto(e.target.value)}
                         required
-                        onInput={(e) => ajustarAlturaTextarea(e.target)}
+                    >
+                        <option value="">Selecione uma opção</option>
+                        <option value="Medalha de Prata 1º Trimestre">
+                            Medalha de Prata 1º Trimestre
+                        </option>
+                        <option value="Medalha de Prata 2º Trimestre">
+                            Medalha de Prata 2º Trimestre
+                        </option>
+                        <option value="Medalha de Prata 3º Trimestre">
+                            Medalha de Prata 3º Trimestre
+                        </option>
+                        <option value="Medalha de Ouro">Medalha de Ouro</option>
+                        <option value="Medalha de Honra ao Mérito">
+                            Medalha de Honra ao Mérito
+                        </option>
+                        <option value="Brasão Legionário Categoria Bronze">
+                            Brasão Legionário Categoria Bronze
+                        </option>
+                        <option value="Brasão Legionário Categoria Prata">
+                            Brasão Legionário Categoria Prata
+                        </option>
+                        <option value="Brasão Legionário Categoria Ouro">
+                            Brasão Legionário Categoria Ouro
+                        </option>
+                        <option value="Outra">Outros</option>
+                    </select>
+                </div>
+                {texto === 'Outra' && (
+                    <div>
+                        <label>Digite sua observação:</label>
+                        <textarea
+                            value={complemento}
+                            onChange={(e) => setComplemento(e.target.value)}
+                            onInput={(e) => ajustarAlturaTextarea(e.target)}
+                        />
+                    </div>
+                )}
+                <div>
+                    <label>Data:</label>
+                    <input
+                        type="date"
+                        value={data}
+                        onChange={(e) => setData(e.target.value)}
+                        required
                     />
                 </div>
                 <button

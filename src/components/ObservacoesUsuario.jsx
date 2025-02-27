@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import './css/ObservacoesUsuario.css';
+import { Trash2 } from 'lucide-react';
 
 const ObservacoesUsuario = () => {
-    const { cpf } = useParams(); // Obtém o CPF do usuário da URL
-    const [observacoes, setObservacoes] = useState([]); // Estado para armazenar as observações
-    const [carregando, setCarregando] = useState(true); // Estado para controlar o carregamento
-    const [erro, setErro] = useState(null); // Estado para armazenar erros
-    const navigate = useNavigate(); // Hook para navegação
+    const { cpf } = useParams();
+    const [observacoes, setObservacoes] = useState([]);
+    const [carregando, setCarregando] = useState(true);
+    const [erro, setErro] = useState(null);
+    const [deletando, setDeletando] = useState(null); // Estado para controlar a exclusão
+    const navigate = useNavigate();
 
-    // Função para buscar as observações do usuário
     const buscarObservacoes = async () => {
-        const token = localStorage.getItem('token'); // Recupera o token do localStorage
+        const token = localStorage.getItem('token');
 
         if (!token) {
-            navigate('/login', { replace: true }); // Redireciona para o login se não houver token
+            navigate('/login', { replace: true });
             return;
         }
 
@@ -23,7 +24,7 @@ const ObservacoesUsuario = () => {
                 `https://api-cfnp.onrender.com/usuarios/cpf/${cpf}/observacoes`,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -33,40 +34,105 @@ const ObservacoesUsuario = () => {
             }
 
             const dados = await resposta.json();
-            setObservacoes(dados); // Atualiza o estado com as observações
+            setObservacoes(dados);
         } catch (error) {
-            setErro(error.message); // Atualiza o estado de erro
+            setErro(error.message);
         } finally {
-            setCarregando(false); // Finaliza o carregamento
+            setCarregando(false);
         }
     };
 
-    // useEffect para buscar as observações quando o componente for montado
+    const deletarObservacao = async (id) => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            navigate('/login', { replace: true });
+            return;
+        }
+
+        setDeletando(id); // Define o ID da observação que está sendo deletada
+
+        try {
+            const resposta = await fetch(
+                `https://api-cfnp.onrender.com/usuarios/cpf/${cpf}/observacoes/${id}`,
+                {
+                    method: 'DELETE',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!resposta.ok) {
+                throw new Error('Erro ao deletar observação');
+            }
+
+            // Atualiza a lista de observações após deletar
+            buscarObservacoes();
+        } catch (error) {
+            setErro(error.message);
+        } finally {
+            setDeletando(null); // Limpa o estado de exclusão
+        }
+    };
+
     useEffect(() => {
         buscarObservacoes();
     }, [cpf, navigate]);
 
-    // Exibir mensagem de carregamento
+    const formatarData = (data) => {
+        const dataObj = new Date(data);
+        return dataObj.toLocaleDateString('pt-BR');
+    };
+
     if (carregando) {
-        return <div>Carregando observações...</div>;
+        return <div className='loading'>Carregando observações...</div>;
     }
 
-    // Exibir mensagem de erro
     if (erro) {
-        return <div>Erro: {erro}</div>;
+        return <div className='error'>Erro: {erro}</div>;
     }
 
-    // Exibir a lista de observações
     return (
         <div className="container-observation">
             <h1>Observações do Aluno</h1>
             <Link to={`/usuarios/${cpf}/observacoes/adicionar`}>
-                <button className="button-primary">Adicionar Observação</button>
+                <button className="button-primary add-user">Adicionar Observação</button>
             </Link>
             <ul>
                 {observacoes.length > 0 ? (
                     observacoes.map((observacao) => (
-                        <li key={observacao._id}>{observacao.texto}</li>
+                        <li key={observacao._id}>
+                            <div className="container-info">
+                                <span className="observacao-texto">
+                                    <strong>Observação:</strong>{' '}
+                                    {observacao.texto}
+                                </span>
+                                <span className="observacao-data">
+                                    <strong>Data:</strong>{' '}
+                                    {formatarData(observacao.data)}
+                                </span>
+                            </div>
+                            {observacao.complemento && (
+                                <div className="complemento">
+                                    <strong>Complemento:</strong>{' '}
+                                    {observacao.complemento}
+                                </div>
+                            )}
+                            <button
+                                className="button-primary delete-button"
+                                onClick={() =>
+                                    deletarObservacao(observacao._id)
+                                }
+                                disabled={deletando === observacao._id} // Desabilita o botão durante a exclusão
+                            >
+                                {deletando === observacao._id ? (
+                                    'Deletando...'
+                                ) : (
+                                    <Trash2 />
+                                )}
+                            </button>
+                        </li>
                     ))
                 ) : (
                     <li>Nenhuma observação encontrada.</li>
