@@ -39,7 +39,7 @@ const FormObservation = () => {
             const usuario = await respostaUsuario.json();
 
             // Determinar o texto a ser enviado
-            const textoObservacao = texto === 'Outra' ? "Outro" : texto;
+            const textoObservacao = texto === 'Outra' ? 'Outro' : texto;
 
             // Enviar a observação para o backend
             const respostaObservacao = await fetch(
@@ -107,6 +107,18 @@ const FormObservation = () => {
                         </option>
                         <option value="Brasão Legionário Categoria Prata">
                             Brasão Legionário Categoria Prata
+                        </option>
+                        <option value="Intervenção Pedagógica: -40">
+                            Intervenção Pedagógica: -40
+                        </option>
+                        <option value="Intervenção Pedagógica: -80">
+                            Intervenção Pedagógica: -80
+                        </option>
+                        <option value="Matrícula Condicionada: -120">
+                            Matrícula Condicionada: -120
+                        </option>
+                        <option value="Transferência Compulsória: -200">
+                            Transferência Compulsória: -200
                         </option>
                         <option value="Brasão Legionário Categoria Ouro">
                             Brasão Legionário Categoria Ouro
