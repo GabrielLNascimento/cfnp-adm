@@ -113,11 +113,11 @@ const ObservacoesUsuario = ({ userRole }) => {
                                     <strong>Data:</strong>{' '}
                                     {formatarData(observacao.data)}
                                 </span>
-                                <span className="observacao-criadoPor">
-                                    <strong>Criado por:</strong>{' '}
-                                    {observacao.criadoPor || 'Desconhecido'}
-                                </span>
                             </div>
+                            <span className="observacao-criadoPor">
+                                <strong>Criado por:</strong>{' '}
+                                {observacao.criadoPor || 'Desconhecido'}
+                            </span>
                             {observacao.complemento && (
                                 <div className="complemento">
                                     <strong>Complemento:</strong>{' '}

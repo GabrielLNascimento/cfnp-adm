@@ -27,7 +27,7 @@ const FormObservation = () => {
         try {
             // Decodifica o token para obter o login do usuário
             const decoded = jwtDecode(token);
-            const criadoPor = decoded.login; // Obtém o login do usuário logado
+            const criadoPor = decoded.login; 
 
             // Buscar o usuário pelo CPF para obter o ID
             const respostaUsuario = await fetch(
