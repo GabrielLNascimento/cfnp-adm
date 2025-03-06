@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import './css/ObservacoesUsuario.css';
 import { Trash2 } from 'lucide-react';
 
-const ObservacoesUsuario = () => {
+const ObservacoesUsuario = ({ userRole }) => {
     const { cpf } = useParams();
     const [observacoes, setObservacoes] = useState([]);
     const [carregando, setCarregando] = useState(true);
@@ -86,18 +86,20 @@ const ObservacoesUsuario = () => {
     };
 
     if (carregando) {
-        return <div className='loading'>Carregando observações...</div>;
+        return <div className="loading">Carregando observações...</div>;
     }
 
     if (erro) {
-        return <div className='error'>Erro: {erro}</div>;
+        return <div className="error">Erro: {erro}</div>;
     }
 
     return (
         <div className="container-observation">
             <h1>Observações do Aluno</h1>
             <Link to={`/usuarios/${cpf}/observacoes/adicionar`}>
-                <button className="button-primary add-user">Adicionar Observação</button>
+                <button className="button-primary add-user">
+                    Adicionar Observação
+                </button>
             </Link>
             <ul>
                 {observacoes.length > 0 ? (
@@ -119,19 +121,21 @@ const ObservacoesUsuario = () => {
                                     {observacao.complemento}
                                 </div>
                             )}
-                            <button
-                                className="button-primary delete-button"
-                                onClick={() =>
-                                    deletarObservacao(observacao._id)
-                                }
-                                disabled={deletando === observacao._id} // Desabilita o botão durante a exclusão
-                            >
-                                {deletando === observacao._id ? (
-                                    'Deletando...'
-                                ) : (
-                                    <Trash2 />
-                                )}
-                            </button>
+                            {userRole === 'admin' && (
+                                <button
+                                    className="button-primary delete-button"
+                                    onClick={() =>
+                                        deletarObservacao(observacao._id)
+                                    }
+                                    disabled={deletando === observacao._id} // Desabilita o botão durante a exclusão
+                                >
+                                    {deletando === observacao._id ? (
+                                        'Deletando...'
+                                    ) : (
+                                        <Trash2 />
+                                    )}
+                                </button>
+                            )}
                         </li>
                     ))
                 ) : (

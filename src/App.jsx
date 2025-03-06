@@ -259,7 +259,7 @@ const App = () => {
                     path="/usuarios/:cpf/observacoes"
                     element={
                         <ProtectedRoute>
-                            <ObservacoesUsuario />
+                            <ObservacoesUsuario userRole={userRole} />
                         </ProtectedRoute>
                     }
                 />
