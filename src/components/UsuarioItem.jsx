@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Paperclip, Pencil } from 'lucide-react';
 import './css/UsuarioItem.css';
 
-const UsuarioItem = ({ usuario, onDelete }) => {
+const UsuarioItem = ({ usuario, onDelete, userRole }) => {
     const [deletando, setDeletando] = useState(false); // Estado para controlar o carregamento do botão
     const navigate = useNavigate(); // Hook para navegação
 
@@ -66,13 +66,15 @@ const UsuarioItem = ({ usuario, onDelete }) => {
                         <Paperclip />
                     </button>
                 </Link>
-                <button
-                    onClick={handleDelete}
-                    disabled={deletando}
-                    className="button-primary"
-                >
-                    {deletando ? 'Deletando...' : <Trash2 />}
-                </button>
+                {userRole === 'admin' && (
+                    <button
+                        onClick={handleDelete}
+                        disabled={deletando}
+                        className="button-primary"
+                    >
+                        {deletando ? 'Deletando...' : <Trash2 />}
+                    </button>
+                )}
             </div>
         </li>
     );
