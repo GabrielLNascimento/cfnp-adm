@@ -8,7 +8,7 @@ const ObservacoesUsuario = ({ userRole }) => {
     const [observacoes, setObservacoes] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
-    const [deletando, setDeletando] = useState(null); // Estado para controlar a exclusão
+    const [deletando, setDeletando] = useState(null);
     const navigate = useNavigate();
 
     const buscarObservacoes = async () => {
@@ -50,7 +50,7 @@ const ObservacoesUsuario = ({ userRole }) => {
             return;
         }
 
-        setDeletando(id); // Define o ID da observação que está sendo deletada
+        setDeletando(id);
 
         try {
             const resposta = await fetch(
@@ -67,12 +67,11 @@ const ObservacoesUsuario = ({ userRole }) => {
                 throw new Error('Erro ao deletar observação');
             }
 
-            // Atualiza a lista de observações após deletar
             buscarObservacoes();
         } catch (error) {
             setErro(error.message);
         } finally {
-            setDeletando(null); // Limpa o estado de exclusão
+            setDeletando(null);
         }
     };
 
@@ -114,6 +113,10 @@ const ObservacoesUsuario = ({ userRole }) => {
                                     <strong>Data:</strong>{' '}
                                     {formatarData(observacao.data)}
                                 </span>
+                                <span className="observacao-criadoPor">
+                                    <strong>Criado por:</strong>{' '}
+                                    {observacao.criadoPor || 'Desconhecido'}
+                                </span>
                             </div>
                             {observacao.complemento && (
                                 <div className="complemento">
@@ -127,7 +130,7 @@ const ObservacoesUsuario = ({ userRole }) => {
                                     onClick={() =>
                                         deletarObservacao(observacao._id)
                                     }
-                                    disabled={deletando === observacao._id} // Desabilita o botão durante a exclusão
+                                    disabled={deletando === observacao._id}
                                 >
                                     {deletando === observacao._id ? (
                                         'Deletando...'

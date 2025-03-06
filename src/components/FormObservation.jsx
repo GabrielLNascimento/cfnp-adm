@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './css/FormObservation.css';
+import { jwtDecode } from 'jwt-decode';
 
 const FormObservation = () => {
     const { cpf } = useParams(); // Obtém o CPF da URL
@@ -16,20 +17,24 @@ const FormObservation = () => {
         e.preventDefault();
         setCarregando(true);
 
-        const token = localStorage.getItem('token'); // Recupera o token do localStorage
+        const token = localStorage.getItem('token');
 
         if (!token) {
-            navigate('/login', { replace: true }); // Redireciona para o login se não houver token
+            navigate('/login', { replace: true });
             return;
         }
 
         try {
+            // Decodifica o token para obter o login do usuário
+            const decoded = jwtDecode(token);
+            const criadoPor = decoded.login; // Obtém o login do usuário logado
+
             // Buscar o usuário pelo CPF para obter o ID
             const respostaUsuario = await fetch(
                 `https://api-cfnp.onrender.com/usuarios/cpf/${cpf}`,
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
@@ -48,13 +53,14 @@ const FormObservation = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        Authorization: `Bearer ${token}`, // Adiciona o token no cabeçalho
+                        Authorization: `Bearer ${token}`,
                     },
                     body: JSON.stringify({
-                        texto: textoObservacao, // Usar o texto selecionado ou personalizado
+                        texto: textoObservacao,
                         data,
                         complemento,
-                        usuarioId: usuario._id, // Usar o _id do usuário encontrado
+                        usuarioId: usuario._id,
+                        criadoPor, 
                     }),
                 }
             );
