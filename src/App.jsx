@@ -16,8 +16,10 @@ const App = () => {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [userRole, setUserRole] = useState(null); // Estado para armazenar a role do usuário
+    const [userRole, setUserRole] = useState(null);
     const navigate = useNavigate();
 
     // Função para decodificar o token e obter a role
@@ -134,21 +136,39 @@ const App = () => {
         }
     };
 
-    // Função para filtrar usuários por nome, CPF ou observações
-    const filtrarUsuarios = (usuarios, termo) => {
-        if (!termo) return usuarios;
+    // Função para filtrar usuários por nome, CPF, observações ou data
+    const filtrarUsuarios = (usuarios, termo, dataInicio, dataFim) => {
+        let usuariosFiltrados = usuarios;
 
-        return usuarios.filter((usuario) => {
-            const nomeMatch = usuario.nome
-                .toLowerCase()
-                .includes(termo.toLowerCase());
-            const cpfMatch = usuario.cpf.includes(termo);
-            const observacaoMatch = usuario.observacoes.some((observacao) =>
-                observacao.texto.toLowerCase().includes(termo.toLowerCase())
-            );
+        // Filtro por termo (nome, CPF ou observações)
+        if (termo) {
+            usuariosFiltrados = usuariosFiltrados.filter((usuario) => {
+                const nomeMatch = usuario.nome
+                    .toLowerCase()
+                    .includes(termo.toLowerCase());
+                const cpfMatch = usuario.cpf.includes(termo);
+                const observacaoMatch = usuario.observacoes.some((observacao) =>
+                    observacao.texto.toLowerCase().includes(termo.toLowerCase())
+                );
 
-            return nomeMatch || cpfMatch || observacaoMatch;
-        });
+                return nomeMatch || cpfMatch || observacaoMatch;
+            });
+        }
+
+        // Filtro por data (data inicial e data final)
+        if (dataInicio && dataFim) {
+            const inicio = new Date(dataInicio);
+            const fim = new Date(dataFim);
+
+            usuariosFiltrados = usuariosFiltrados.filter((usuario) => {
+                return usuario.observacoes.some((observacao) => {
+                    const dataObservacao = new Date(observacao.data);
+                    return dataObservacao >= inicio && dataObservacao <= fim;
+                });
+            });
+        }
+
+        return usuariosFiltrados;
     };
 
     // Função para atualizar um usuário
@@ -234,14 +254,32 @@ const App = () => {
                                             setTermoPesquisa(e.target.value)
                                         }
                                     />
+                                    <input
+                                        type="date"
+                                        placeholder="Data inicial"
+                                        value={dataInicio}
+                                        onChange={(e) =>
+                                            setDataInicio(e.target.value)
+                                        }
+                                    />
+                                    <input
+                                        type="date"
+                                        placeholder="Data final"
+                                        value={dataFim}
+                                        onChange={(e) =>
+                                            setDataFim(e.target.value)
+                                        }
+                                    />
                                 </div>
                                 <UsuarioList
                                     usuarios={filtrarUsuarios(
                                         usuarios,
-                                        termoPesquisa
+                                        termoPesquisa,
+                                        dataInicio,
+                                        dataFim
                                     )}
                                     onDelete={deletarUsuario}
-                                    userRole={userRole} // Passa a role do usuário logado
+                                    userRole={userRole}
                                 />
                             </div>
                         </ProtectedRoute>
