@@ -19,7 +19,7 @@ const Login = () => {
 
         try {
             const resposta = await fetch(
-                'https://api-cfnp.onrender.com/login',
+                'https://api-cfnp.onrender.com/usuarios/login',
                 {
                     method: 'POST',
                     headers: {
