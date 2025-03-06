@@ -16,9 +16,21 @@ const App = () => {
     const [erro, setErro] = useState(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userRole, setUserRole] = useState(null); // Estado para armazenar a role do usuário
     const navigate = useNavigate();
 
-    // Função para buscar os usuários e suas observações
+    // Função para decodificar o token e obter a role
+    const decodificarToken = (token) => {
+        try {
+            const decoded = jwtDecode(token);
+            return decoded.role; // Retorna a role do usuário
+        } catch (error) {
+            console.error('Erro ao decodificar o token:', error);
+            return null;
+        }
+    };
+
+    // Função para buscar os usuários
     const buscarUsuarios = async () => {
         const token = localStorage.getItem('token');
 
@@ -28,9 +40,12 @@ const App = () => {
             return;
         }
 
+        // Decodifica o token e define a role do usuário
+        const role = decodificarToken(token);
+        setUserRole(role);
+
         try {
-            // Busca os usuários
-            const respostaUsuarios = await fetch(
+            const resposta = await fetch(
                 'https://api-cfnp.onrender.com/usuarios',
                 {
                     headers: {
@@ -39,34 +54,12 @@ const App = () => {
                 }
             );
 
-            if (!respostaUsuarios.ok) {
+            if (!resposta.ok) {
                 throw new Error('Erro ao carregar usuários');
             }
 
-            const usuarios = await respostaUsuarios.json();
-
-            // Para cada usuário, busca as observações
-            const usuariosComObservacoes = await Promise.all(
-                usuarios.map(async (usuario) => {
-                    const respostaObservacoes = await fetch(
-                        `https://api-cfnp.onrender.com/usuarios/cpf/${usuario.cpf}/observacoes`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        }
-                    );
-
-                    if (!respostaObservacoes.ok) {
-                        throw new Error('Erro ao carregar observações');
-                    }
-
-                    const observacoes = await respostaObservacoes.json();
-                    return { ...usuario, observacoes }; // Adiciona as observações ao usuário
-                })
-            );
-
-            setUsuarios(usuariosComObservacoes); // Atualiza o estado com os usuários e suas observações
+            const dados = await resposta.json();
+            setUsuarios(dados);
         } catch (error) {
             setErro(error.message);
         } finally {
@@ -188,11 +181,11 @@ const App = () => {
     }, [navigate]);
 
     if (carregando) {
-        return <div className='loading'>Carregando usuários...</div>;
+        return <div className="loading">Carregando usuários...</div>;
     }
 
     if (erro) {
-        return <div className='error'>Erro: {erro}</div>;
+        return <div className="error">Erro: {erro}</div>;
     }
 
     return (
@@ -247,6 +240,7 @@ const App = () => {
                                         termoPesquisa
                                     )}
                                     onDelete={deletarUsuario}
+                                    userRole={userRole} // Passa a role do usuário logado
                                 />
                             </div>
                         </ProtectedRoute>
