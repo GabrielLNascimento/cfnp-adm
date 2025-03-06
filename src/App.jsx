@@ -134,30 +134,10 @@ const App = () => {
         }
     };
 
+    // Função para filtrar usuários por nome, CPF ou observações
     const filtrarUsuarios = (usuarios, termo) => {
         if (!termo) return usuarios;
 
-        // Verifica se o termo está no formato MM/AAAA
-        const regexMesAno = /^\d{2}\/\d{4}$/;
-        const isMesAno = regexMesAno.test(termo);
-
-        if (isMesAno) {
-            // Extrai o mês e o ano do termo
-            const [mes, ano] = termo.split('/');
-
-            // Filtra as observações pelo mês e ano
-            return usuarios.filter((usuario) => {
-                return usuario.observacoes.some((observacao) => {
-                    const dataObservacao = new Date(observacao.data);
-                    return (
-                        dataObservacao.getMonth() + 1 === parseInt(mes) && // getMonth() retorna 0-11
-                        dataObservacao.getFullYear() === parseInt(ano)
-                    );
-                });
-            });
-        }
-
-        // Filtro por nome, CPF ou observações
         return usuarios.filter((usuario) => {
             const nomeMatch = usuario.nome
                 .toLowerCase()
