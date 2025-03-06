@@ -134,18 +134,35 @@ const App = () => {
         }
     };
 
-    // Função para filtrar usuários por nome, CPF ou observações
+    const formatarDataParaISO = (dataString) => {
+        // Converte "19/03/2025" para "2025-03-19"
+        const partes = dataString.split('/');
+        if (partes.length === 3) {
+            return `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
+        return dataString; // Retorna a string original se não for um formato de data conhecido
+    };
+
     const filtrarUsuarios = (usuarios, termo) => {
         if (!termo) return usuarios;
+
+        const termoFormatado = formatarDataParaISO(termo);
 
         return usuarios.filter((usuario) => {
             const nomeMatch = usuario.nome
                 .toLowerCase()
                 .includes(termo.toLowerCase());
             const cpfMatch = usuario.cpf.includes(termo);
-            const observacaoMatch = usuario.observacoes.some((observacao) =>
-                observacao.texto.toLowerCase().includes(termo.toLowerCase())
-            );
+
+            // Verifica se alguma observação contém o termo no texto ou na data
+            const observacaoMatch = usuario.observacoes.some((observacao) => {
+                const textoMatch = observacao.texto
+                    .toLowerCase()
+                    .includes(termo.toLowerCase());
+                const dataMatch =
+                    observacao.data && observacao.data.includes(termoFormatado);
+                return textoMatch || dataMatch;
+            });
 
             return nomeMatch || cpfMatch || observacaoMatch;
         });
