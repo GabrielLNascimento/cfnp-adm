@@ -1,0 +1,62 @@
+.container-observation {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.container-observation h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.container-observation ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.container-observation li {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinha todo o conteúdo à direita */
+    gap: 20px;
+}
+
+
+.container-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%; /* Garante que o container-info ocupe toda a largura */
+}
+
+.observacao-texto {
+    text-align: right; /* Alinha o texto da observação à direita */
+}
+
+.observacao-data {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.complemento {
+    text-align: left; /* Alinha o texto do complemento à direita */
+    width: 100%; /* Garante que o complemento ocupe toda a largura */
+}
+
+.observations-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+button.add-user {
+    display: block;
+    margin: auto;
+}

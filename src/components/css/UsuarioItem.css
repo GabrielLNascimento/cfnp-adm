@@ -1,0 +1,24 @@
+li {
+    border: 2px solid gray;
+    padding: 10px 18px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    align-items: center;
+}
+
+li .container-aluno {
+    display: flex;
+    gap: 10px;
+}
+
+li .container-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+li .container-actions button {
+    padding: 8px 15px;
+}
