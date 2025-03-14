@@ -51,6 +51,7 @@ nav div {
     margin: 30px auto;
     display: flex;
     justify-content: center;
+    flex-direction: column;
 }
 
 .container-input input {

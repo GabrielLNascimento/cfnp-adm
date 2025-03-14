@@ -295,20 +295,22 @@ const App = () => {
                                             setTermoPesquisa(e.target.value)
                                         }
                                     />
-                                    <input
-                                        type="date"
-                                        value={dataInicio}
-                                        onChange={(e) =>
-                                            setDataInicio(e.target.value)
-                                        }
-                                    />
-                                    <input
-                                        type="date"
-                                        value={dataFim}
-                                        onChange={(e) =>
-                                            setDataFim(e.target.value)
-                                        }
-                                    />
+                                    <div>
+                                        <input
+                                            type="date"
+                                            value={dataInicio}
+                                            onChange={(e) =>
+                                                setDataInicio(e.target.value)
+                                            }
+                                        />
+                                        <input
+                                            type="date"
+                                            value={dataFim}
+                                            onChange={(e) =>
+                                                setDataFim(e.target.value)
+                                            }
+                                        />
+                                    </div>
                                 </div>
                                 <UsuarioList
                                     usuarios={filtrarUsuarios(
