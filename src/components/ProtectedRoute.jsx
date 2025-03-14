@@ -1,6 +1,6 @@
 // ProtectedRoute.js
-import React from 'react';
 import { Navigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ children }) => {
     const token = localStorage.getItem('token'); // Verifica o token
@@ -12,6 +12,10 @@ const ProtectedRoute = ({ children }) => {
 
     // Se houver token, renderiza o componente filho
     return children;
+};
+
+ProtectedRoute.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export default ProtectedRoute;

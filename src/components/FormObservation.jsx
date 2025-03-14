@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './css/FormObservation.css';
 import { jwtDecode } from 'jwt-decode';
@@ -27,7 +27,7 @@ const FormObservation = () => {
         try {
             // Decodifica o token para obter o login do usuário
             const decoded = jwtDecode(token);
-            const criadoPor = decoded.login; 
+            const criadoPor = decoded.login;
 
             // Buscar o usuário pelo CPF para obter o ID
             const respostaUsuario = await fetch(
@@ -60,7 +60,7 @@ const FormObservation = () => {
                         data,
                         complemento,
                         usuarioId: usuario._id,
-                        criadoPor: criadoPor, 
+                        criadoPor: criadoPor,
                     }),
                 }
             );
@@ -82,6 +82,13 @@ const FormObservation = () => {
         textarea.style.height = 'auto'; // Redefine a altura para recalcular
         textarea.style.height = `${textarea.scrollHeight + 10}px`; // Ajusta a altura com base no conteúdo
     };
+
+    const deveMostrarTextarea =
+        texto === 'Outra' ||
+        texto === 'Intervenção Pedagógica: -40' ||
+        texto === 'Intervenção Pedagógica: -80' ||
+        texto === 'Matrícula Condicionada: -120' ||
+        texto === 'Transferência Compulsória: -200';
 
     return (
         <div className="container-observation">
@@ -114,6 +121,9 @@ const FormObservation = () => {
                         <option value="Brasão Legionário Categoria Prata">
                             Brasão Legionário Categoria Prata
                         </option>
+                        <option value="Brasão Legionário Categoria Ouro">
+                            Brasão Legionário Categoria Ouro
+                        </option>
                         <option value="Intervenção Pedagógica: -40">
                             Intervenção Pedagógica: -40
                         </option>
@@ -126,19 +136,17 @@ const FormObservation = () => {
                         <option value="Transferência Compulsória: -200">
                             Transferência Compulsória: -200
                         </option>
-                        <option value="Brasão Legionário Categoria Ouro">
-                            Brasão Legionário Categoria Ouro
-                        </option>
                         <option value="Outra">Outros</option>
                     </select>
                 </div>
-                {texto === 'Outra' && (
+                {deveMostrarTextarea && (
                     <div>
                         <label>Digite sua observação:</label>
                         <textarea
                             value={complemento}
                             onChange={(e) => setComplemento(e.target.value)}
                             onInput={(e) => ajustarAlturaTextarea(e.target)}
+                            required
                         />
                     </div>
                 )}

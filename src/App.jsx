@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Route, Routes, Link, Navigate, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import './App.css';
@@ -11,11 +11,6 @@ import EditUser from './components/EditUser';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import RelatorioAluno from './components/RelatorioAluno';
-
-const API_URL =
-    process.env.NODE_ENV === 'production'
-        ? 'https://api-cfnp.onrender.com/usuarios'
-        : 'http://localhost:3000/';
 
 const App = () => {
     const [usuarios, setUsuarios] = useState([]);
@@ -41,7 +36,7 @@ const App = () => {
     };
 
     // Função para buscar os usuários
-    const buscarUsuarios = async () => {
+    const buscarUsuarios = useCallback(async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -55,7 +50,8 @@ const App = () => {
         setUserRole(role);
 
         try {
-            const resposta = await fetch(API_URL,
+            const resposta = await fetch(
+                'https://api-cfnp.onrender.com/usuarios',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -74,9 +70,9 @@ const App = () => {
         } finally {
             setCarregando(false);
         }
-    };
+    }, [navigate]);
 
-    const buscarObservacoes = async () => {
+    const buscarObservacoes = useCallback(async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -104,7 +100,7 @@ const App = () => {
             console.error('Erro ao buscar observações:', error);
             setErro(error.message);
         }
-    };
+    }, []);
 
     // Função para adicionar um usuário
     const adicionarUsuario = async (novoUsuario) => {
@@ -244,7 +240,7 @@ const App = () => {
             setCarregando(false);
             navigate('/login', { replace: true });
         }
-    }, [navigate]);
+    }, [navigate, buscarUsuarios, buscarObservacoes]);
 
     if (carregando) {
         return <div className="loading">Carregando usuários...</div>;

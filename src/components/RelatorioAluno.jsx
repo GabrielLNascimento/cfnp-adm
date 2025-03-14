@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './css/RelatorioAluno.css';
 
@@ -10,7 +10,7 @@ const RelatorioAluno = () => {
     const navigate = useNavigate();
 
     // Função para buscar o relatório do aluno
-    const buscarRelatorio = async () => {
+    const buscarRelatorio = useCallback(async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -39,7 +39,7 @@ const RelatorioAluno = () => {
         } finally {
             setCarregando(false);
         }
-    };
+    }, [cpf, navigate]);
 
     // Função para salvar o relatório
     const salvarRelatorio = async () => {
@@ -77,7 +77,7 @@ const RelatorioAluno = () => {
 
     useEffect(() => {
         buscarRelatorio();
-    }, [cpf]);
+    }, [buscarRelatorio]);
 
     if (carregando) {
         return <div className="loading">Carregando relatório...</div>;

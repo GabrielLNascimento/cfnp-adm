@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './css/EditUser.css';
+import PropTypes from 'prop-types';
+
 
 const EditUser = ({ atualizarUsuario }) => {
     const { cpf } = useParams(); // Obtém o CPF da URL
@@ -122,6 +124,10 @@ const EditUser = ({ atualizarUsuario }) => {
             </form>
         </div>
     );
+};
+
+EditUser.propTypes = {
+    atualizarUsuario: PropTypes.func.isRequired,
 };
 
 export default EditUser;

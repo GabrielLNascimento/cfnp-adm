@@ -1,6 +1,6 @@
-import React from 'react';
 import UsuarioItem from './UsuarioItem';
 import './css/UsuarioList.css';
+import PropTypes from 'prop-types';
 
 const UsuarioList = ({ usuarios, onDelete, userRole }) => {
     return (
@@ -24,6 +24,12 @@ const UsuarioList = ({ usuarios, onDelete, userRole }) => {
             ))}
         </ul>
     );
+};
+
+UsuarioList.propTypes = {
+    usuarios: PropTypes.array.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    userRole: PropTypes.string.isRequired,
 };
 
 export default UsuarioList;

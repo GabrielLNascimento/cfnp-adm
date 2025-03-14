@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Paperclip, Pencil } from 'lucide-react';
 import './css/UsuarioItem.css';
+import PropTypes from 'prop-types';
 
 const UsuarioItem = ({ usuario, onDelete, userRole }) => {
     const [deletando, setDeletando] = useState(false); // Estado para controlar o carregamento do botão
@@ -78,6 +79,12 @@ const UsuarioItem = ({ usuario, onDelete, userRole }) => {
             </div>
         </li>
     );
+};
+
+UsuarioItem.propTypes = {
+    usuario: PropTypes.object.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    userRole: PropTypes.string.isRequired,
 };
 
 export default UsuarioItem;

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import "./css/FormUsers.css"
+import PropTypes from 'prop-types';
+import './css/FormUsers.css';
 
 const FormUsers = ({ adicionarUsuario }) => {
     const [nome, setNome] = useState('');
@@ -11,17 +12,10 @@ const FormUsers = ({ adicionarUsuario }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Criar o objeto do usuário
-        const novoUsuario = {
-            nome,
-            cpf,
-        };
+        const novoUsuario = { nome, cpf };
 
         try {
-            // Adicionar o usuário e recarregar a lista
             await adicionarUsuario(novoUsuario);
-
-            // Redirecionar para a lista de usuários após o sucesso
             navigate('/');
         } catch (error) {
             console.error('Erro:', error);
@@ -29,7 +23,7 @@ const FormUsers = ({ adicionarUsuario }) => {
     };
 
     return (
-        <div className='container-formuser'>
+        <div className="container-formuser">
             <h1>Adicionar Usuário</h1>
             <form onSubmit={handleSubmit}>
                 <div>
@@ -50,10 +44,17 @@ const FormUsers = ({ adicionarUsuario }) => {
                         required
                     />
                 </div>
-                <button type="submit" className='button-primary'>Adicionar</button>
+                <button type="submit" className="button-primary">
+                    Adicionar
+                </button>
             </form>
         </div>
     );
 };
+
+FormUsers.propTypes = {
+    adicionarUsuario: PropTypes.func.isRequired,
+};
+
 
 export default FormUsers;

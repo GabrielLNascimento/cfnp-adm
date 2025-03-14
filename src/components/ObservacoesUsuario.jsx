@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import './css/ObservacoesUsuario.css';
 import TelaImpressao from './TelaImpressao';
 import { Trash2, Printer, FileText, CirclePlus } from 'lucide-react';
+import PropTypes from 'prop-types';
 
 const ObservacoesUsuario = ({ userRole }) => {
     const { cpf } = useParams();
@@ -15,7 +16,7 @@ const ObservacoesUsuario = ({ userRole }) => {
     const [cpfAluno, setCpfAluno] = useState('');
     const navigate = useNavigate();
 
-    const buscarObservacoes = async () => {
+    const buscarObservacoes = useCallback(async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
@@ -61,7 +62,7 @@ const ObservacoesUsuario = ({ userRole }) => {
         } finally {
             setCarregando(false);
         }
-    };
+    }, [cpf, navigate]);
 
     const abrirTelaImpressao = () => {
         setMostrarTelaImpressao(true);
@@ -106,7 +107,7 @@ const ObservacoesUsuario = ({ userRole }) => {
 
     useEffect(() => {
         buscarObservacoes();
-    }, [cpf, navigate]);
+    }, [buscarObservacoes]);
 
     const formatarData = (data) => {
         const dataObj = new Date(data);
@@ -197,6 +198,10 @@ const ObservacoesUsuario = ({ userRole }) => {
             </ul>
         </div>
     );
+};
+
+ObservacoesUsuario.propTypes = {
+    userRole: PropTypes.func.isRequired,
 };
 
 export default ObservacoesUsuario;

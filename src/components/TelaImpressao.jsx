@@ -1,5 +1,5 @@
-import React from 'react';
 import './css/TelaImpressao.css';
+import PropTypes from 'prop-types';
 
 const TelaImpressao = ({ observacoes, nomeAluno, onClose, cpfAluno }) => {
     return (
@@ -35,6 +35,13 @@ const TelaImpressao = ({ observacoes, nomeAluno, onClose, cpfAluno }) => {
             </div>
         </div>
     );
+};
+
+TelaImpressao.propTypes = {
+    observacoes: PropTypes.array.isRequired,
+    nomeAluno: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
+    cpfAluno: PropTypes.string.isRequired,
 };
 
 export default TelaImpressao;
