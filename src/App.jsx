@@ -15,6 +15,8 @@ import RelatorioAluno from './components/RelatorioAluno';
 const App = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [observacoes, setObservacoes] = useState([]);
+    const [dataInicio, setDataInicio] = useState('');
+    const [dataFim, setDataFim] = useState('');
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
@@ -166,38 +168,46 @@ const App = () => {
         }
     };
 
-    const filtrarUsuarios = (usuarios, termo, observacoes) => {
-        if (!termo) return usuarios; // Retorna todos os usuários se não houver termo de pesquisa
+    const filtrarUsuarios = (
+        usuarios,
+        termo,
+        observacoes,
+        dataInicio,
+        dataFim
+    ) => {
+        if (!termo && !dataInicio && !dataFim) return usuarios; // Retorna todos os usuários se não houver filtros
 
         return usuarios.filter((usuario) => {
             const nomeMatch = usuario.nome
                 ? usuario.nome.toLowerCase().includes(termo.toLowerCase())
                 : false; // Verifica se o nome existe antes de usar toLowerCase
 
-            const cpfMatch = usuario.cpf ? usuario.cpf.includes(termo) : false; 
+            const cpfMatch = usuario.cpf ? usuario.cpf.includes(termo) : false; // Verifica se o CPF existe antes de usar includes
 
-            // Filtra por observações (texto e data)
+            // Filtra por observações (texto e intervalo de datas)
             const observacaoMatch = observacoes
-                .filter((observacao) => observacao.usuarioId === usuario._id) 
+                .filter((observacao) => observacao.usuarioId === usuario._id) // Filtra observações do usuário atual
                 .some((observacao) => {
                     const textoMatch = observacao.texto
                         ? observacao.texto
                               .toLowerCase()
                               .includes(termo.toLowerCase())
-                        : false; 
+                        : false; // Verifica se o texto existe antes de usar toLowerCase
 
-                    // Filtra por data
-                    const dataMatch = observacao.data
-                        ? new Date(observacao.data)
-                              .toISOString()
-                              .split('T')[0]
-                              .includes(termo)
-                        : false; 
+                    // Filtra por intervalo de datas
+                    const dataObservacao = observacao.data
+                        ? new Date(observacao.data).toISOString().split('T')[0]
+                        : null;
 
-                    return textoMatch || dataMatch; 
+                    const dataDentroDoIntervalo =
+                        dataObservacao &&
+                        (!dataInicio || dataObservacao >= dataInicio) &&
+                        (!dataFim || dataObservacao <= dataFim);
+
+                    return textoMatch && dataDentroDoIntervalo;
                 });
 
-            return nomeMatch || cpfMatch || observacaoMatch; // Retorna usuários que correspondem ao nome, CPF ou observações
+            return nomeMatch || cpfMatch || observacaoMatch;
         });
     };
 
@@ -285,15 +295,31 @@ const App = () => {
                                             setTermoPesquisa(e.target.value)
                                         }
                                     />
+                                    <input
+                                        type="date"
+                                        value={dataInicio}
+                                        onChange={(e) =>
+                                            setDataInicio(e.target.value)
+                                        }
+                                    />
+                                    <input
+                                        type="date"
+                                        value={dataFim}
+                                        onChange={(e) =>
+                                            setDataFim(e.target.value)
+                                        }
+                                    />
                                 </div>
                                 <UsuarioList
                                     usuarios={filtrarUsuarios(
                                         usuarios,
                                         termoPesquisa,
-                                        observacoes
+                                        observacoes,
+                                        dataInicio,
+                                        dataFim
                                     )}
                                     onDelete={deletarUsuario}
-                                    userRole={userRole} // Passa a role do usuário logado
+                                    userRole={userRole}
                                 />
                             </div>
                         </ProtectedRoute>
