@@ -14,6 +14,7 @@ import RelatorioAluno from './components/RelatorioAluno';
 
 const App = () => {
     const [usuarios, setUsuarios] = useState([]);
+    const [observacoes, setObservacoes] = useState([]);
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
@@ -66,6 +67,36 @@ const App = () => {
             setErro(error.message);
         } finally {
             setCarregando(false);
+        }
+    };
+
+    const buscarObservacoes = async () => {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            console.error('Token não encontrado. Redirecione para o login.');
+            return;
+        }
+
+        try {
+            const resposta = await fetch(
+                'https://api-cfnp.onrender.com/observacoes',
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!resposta.ok) {
+                throw new Error('Erro ao carregar observações');
+            }
+
+            const dados = await resposta.json();
+            setObservacoes(dados); // Atualiza o estado com as observações
+        } catch (error) {
+            console.error('Erro ao buscar observações:', error);
+            setErro(error.message);
         }
     };
 
@@ -135,7 +166,7 @@ const App = () => {
         }
     };
 
-    const filtrarUsuarios = (usuarios, termo) => {
+    const filtrarUsuarios = (usuarios, termo, observacoes) => {
         if (!termo) return usuarios; // Retorna todos os usuários se não houver termo de pesquisa
 
         return usuarios.filter((usuario) => {
@@ -143,26 +174,28 @@ const App = () => {
                 ? usuario.nome.toLowerCase().includes(termo.toLowerCase())
                 : false; // Verifica se o nome existe antes de usar toLowerCase
 
-            const cpfMatch = usuario.cpf ? usuario.cpf.includes(termo) : false; // Verifica se o CPF existe antes de usar includes
+            const cpfMatch = usuario.cpf ? usuario.cpf.includes(termo) : false; 
 
             // Filtra por observações (texto e data)
-            const observacaoMatch = usuario.observacoes?.some((observacao) => {
-                const textoMatch = observacao.texto
-                    ? observacao.texto
-                          .toLowerCase()
-                          .includes(termo.toLowerCase())
-                    : false; // Verifica se o texto existe antes de usar toLowerCase
+            const observacaoMatch = observacoes
+                .filter((observacao) => observacao.usuarioId === usuario._id) 
+                .some((observacao) => {
+                    const textoMatch = observacao.texto
+                        ? observacao.texto
+                              .toLowerCase()
+                              .includes(termo.toLowerCase())
+                        : false; 
 
-                // Filtra por data
-                const dataMatch = observacao.data
-                    ? new Date(observacao.data)
-                          .toISOString()
-                          .split('T')[0]
-                          .includes(termo)
-                    : false; // Verifica se a data existe antes de processá-la
+                    // Filtra por data
+                    const dataMatch = observacao.data
+                        ? new Date(observacao.data)
+                              .toISOString()
+                              .split('T')[0]
+                              .includes(termo)
+                        : false; 
 
-                return textoMatch || dataMatch; // Retorna true se o texto ou a data corresponderem
-            });
+                    return textoMatch || dataMatch; 
+                });
 
             return nomeMatch || cpfMatch || observacaoMatch; // Retorna usuários que correspondem ao nome, CPF ou observações
         });
@@ -191,6 +224,7 @@ const App = () => {
         if (token) {
             setIsAuthenticated(true);
             buscarUsuarios();
+            buscarObservacoes();
         } else {
             console.log('Token não encontrado, redirecionando para /login');
             setCarregando(false);
@@ -255,7 +289,8 @@ const App = () => {
                                 <UsuarioList
                                     usuarios={filtrarUsuarios(
                                         usuarios,
-                                        termoPesquisa
+                                        termoPesquisa,
+                                        observacoes
                                     )}
                                     onDelete={deletarUsuario}
                                     userRole={userRole} // Passa a role do usuário logado
