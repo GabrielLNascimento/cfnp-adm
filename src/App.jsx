@@ -287,6 +287,7 @@ const App = () => {
                         <ProtectedRoute>
                             <div className="container-userslist">
                                 <div className="container-input">
+                                    {/* Input de texto */}
                                     <input
                                         type="text"
                                         placeholder="Pesquisar por nome, CPF ou observações..."
@@ -295,21 +296,31 @@ const App = () => {
                                             setTermoPesquisa(e.target.value)
                                         }
                                     />
-                                    <div>
-                                        <input
-                                            type="date"
-                                            value={dataInicio}
-                                            onChange={(e) =>
-                                                setDataInicio(e.target.value)
-                                            }
-                                        />
-                                        <input
-                                            type="date"
-                                            value={dataFim}
-                                            onChange={(e) =>
-                                                setDataFim(e.target.value)
-                                            }
-                                        />
+
+                                    {/* Container para os inputs de data */}
+                                    <div className="container-datas">
+                                        <div className="input-data">
+                                            <label>Início</label>
+                                            <input
+                                                type="date"
+                                                value={dataInicio}
+                                                onChange={(e) =>
+                                                    setDataInicio(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className="input-data">
+                                            <label>Fim</label>
+                                            <input
+                                                type="date"
+                                                value={dataFim}
+                                                onChange={(e) =>
+                                                    setDataFim(e.target.value)
+                                                }
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                                 <UsuarioList

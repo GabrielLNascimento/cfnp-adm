@@ -35,7 +35,7 @@ nav div {
     border-radius: 20px;
     font-weight: bold;
     cursor: pointer;
-    transition: all .3s;
+    transition: all 0.3s;
 }
 
 .button-primary:hover {
@@ -51,18 +51,50 @@ nav div {
     margin: 30px auto;
     display: flex;
     justify-content: center;
+    align-items: center;
     flex-direction: column;
+    gap: 20px; /* Espaçamento entre os inputs */
+    width: 100%;
+    max-width: 700px; /* Largura máxima do container */
 }
 
-.container-input input {
+.container-input input[type='text'] {
     width: 100%;
-    max-width: 700px;
     font-size: 20px;
     padding: 10px 15px;
     border-radius: 5px;
+    border: 1px solid #ccc;
 }
 
-.loading, .error {
+.container-datas {
+    display: flex;
+    gap: 20px; /* Espaçamento entre os inputs de data */
+    width: 100%;
+    justify-content: center;
+}
+
+.input-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px; /* Espaçamento entre o label e o input */
+}
+
+.input-data label {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input-data input[type="date"] {
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.loading,
+.error {
     border: 2px solid rgb(62, 62, 62);
     text-align: center;
     font-size: 22px;
