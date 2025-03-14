@@ -12,6 +12,11 @@ import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
 import RelatorioAluno from './components/RelatorioAluno';
 
+const API_URL =
+    process.env.NODE_ENV === 'production'
+        ? 'https://api-cfnp.onrender.com/usuarios'
+        : 'http://localhost:3000/';
+
 const App = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [observacoes, setObservacoes] = useState([]);
@@ -50,8 +55,7 @@ const App = () => {
         setUserRole(role);
 
         try {
-            const resposta = await fetch(
-                'https://api-cfnp.onrender.com/usuarios',
+            const resposta = await fetch(API_URL,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
