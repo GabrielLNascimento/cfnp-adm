@@ -136,15 +136,23 @@ const App = () => {
     };
 
     const filtrarUsuarios = (usuarios, termo) => {
-        if (!termo) return usuarios; // Retorna todos os usuários se não houver termo de pesquisa
+        if (!termo) return usuarios; 
 
         return usuarios.filter((usuario) => {
             const nomeMatch = usuario.nome
                 .toLowerCase()
-                .includes(termo.toLowerCase()); // Filtra por nome (case-insensitive)
-            const cpfMatch = usuario.cpf.includes(termo); // Filtra por CPF
+                .includes(termo.toLowerCase()); 
+            const cpfMatch = usuario.cpf.includes(termo); 
 
-            return nomeMatch || cpfMatch; // Retorna usuários que correspondem ao nome ou CPF
+            
+            const observacaoMatch = usuario.observacoes?.some((observacao) => {
+                const textoMatch = observacao.texto
+                    .toLowerCase()
+                    .includes(termo.toLowerCase());
+                return textoMatch;
+            });
+
+            return nomeMatch || cpfMatch || observacaoMatch; 
         });
     };
 
