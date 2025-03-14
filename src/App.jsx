@@ -144,15 +144,24 @@ const App = () => {
                 .includes(termo.toLowerCase()); 
             const cpfMatch = usuario.cpf.includes(termo); 
 
-            
+            // Filtra por observações (texto e data)
             const observacaoMatch = usuario.observacoes?.some((observacao) => {
                 const textoMatch = observacao.texto
                     .toLowerCase()
                     .includes(termo.toLowerCase());
-                return textoMatch;
+
+                // Filtra por data
+                const dataMatch = observacao.data
+                    ? new Date(observacao.data)
+                          .toISOString()
+                          .split('T')[0]
+                          .includes(termo)
+                    : false;
+
+                return textoMatch || dataMatch; 
             });
 
-            return nomeMatch || cpfMatch || observacaoMatch; 
+            return nomeMatch || cpfMatch || observacaoMatch; // Retorna usuários que correspondem ao nome, CPF ou observações
         });
     };
 
