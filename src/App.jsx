@@ -136,19 +136,22 @@ const App = () => {
     };
 
     const filtrarUsuarios = (usuarios, termo) => {
-        if (!termo) return usuarios; 
+        if (!termo) return usuarios; // Retorna todos os usuários se não houver termo de pesquisa
 
         return usuarios.filter((usuario) => {
             const nomeMatch = usuario.nome
-                .toLowerCase()
-                .includes(termo.toLowerCase()); 
-            const cpfMatch = usuario.cpf.includes(termo); 
+                ? usuario.nome.toLowerCase().includes(termo.toLowerCase())
+                : false; // Verifica se o nome existe antes de usar toLowerCase
+
+            const cpfMatch = usuario.cpf ? usuario.cpf.includes(termo) : false; // Verifica se o CPF existe antes de usar includes
 
             // Filtra por observações (texto e data)
             const observacaoMatch = usuario.observacoes?.some((observacao) => {
                 const textoMatch = observacao.texto
-                    .toLowerCase()
-                    .includes(termo.toLowerCase());
+                    ? observacao.texto
+                          .toLowerCase()
+                          .includes(termo.toLowerCase())
+                    : false; // Verifica se o texto existe antes de usar toLowerCase
 
                 // Filtra por data
                 const dataMatch = observacao.data
@@ -156,9 +159,9 @@ const App = () => {
                           .toISOString()
                           .split('T')[0]
                           .includes(termo)
-                    : false;
+                    : false; // Verifica se a data existe antes de processá-la
 
-                return textoMatch || dataMatch; 
+                return textoMatch || dataMatch; // Retorna true se o texto ou a data corresponderem
             });
 
             return nomeMatch || cpfMatch || observacaoMatch; // Retorna usuários que correspondem ao nome, CPF ou observações
