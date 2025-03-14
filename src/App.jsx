@@ -80,7 +80,7 @@ const App = () => {
 
         try {
             const resposta = await fetch(
-                'https://api-cfnp.onrender.com/observacoes',
+                'https://api-cfnp.onrender.com/usuarios/observacoes',
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
