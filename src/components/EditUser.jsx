@@ -3,14 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import './css/EditUser.css';
 import PropTypes from 'prop-types';
 
-
-const EditUser = ({ atualizarUsuario }) => {
+const EditUser = ({ atualizarUsuario, usuarios }) => {
     const { cpf } = useParams(); // Obtém o CPF da URL
     const navigate = useNavigate(); // Hook para navegação
     const [nome, setNome] = useState('');
     const [cpfUsuario, setCpfUsuario] = useState(''); // Estado para o CPF
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
+    const [erroMsg, setErroMsg] = useState('')
 
     // Buscar os dados do usuário ao carregar o componente
     useEffect(() => {
@@ -60,6 +60,19 @@ const EditUser = ({ atualizarUsuario }) => {
             return;
         }
 
+        if (cpfUsuario.length !== 14) {
+            setErroMsg('CPF deve ter 14 digitos. Exemplo: (000.000.000-00)');
+            return;
+        }
+
+        const cpfExistente = usuarios.some((usuario) => usuario.cpf === cpfUsuario)
+        if (cpfExistente) {
+            setErroMsg('CPF ja cadastrado')
+            return
+        }
+
+        setErroMsg('')
+
         try {
             const resposta = await fetch(
                 `https://api-cfnp.onrender.com/usuarios/cpf/${cpf}`,
@@ -87,12 +100,41 @@ const EditUser = ({ atualizarUsuario }) => {
         }
     };
 
+    const formatarCpf = (cpf) => {
+        const cpfLimpo = cpf.replace(/\D/g, '');
+        const cpfLimitado = cpfLimpo.slice(0, 11);
+
+        let cpfFormatado = '';
+
+        for (let i = 0; i < cpfLimitado.length; i++) {
+            if (i === 3 || i === 6) {
+                cpfFormatado += '.';
+            } else if (i === 9) {
+                cpfFormatado += '-';
+            }
+            cpfFormatado += cpfLimitado[i];
+        }
+
+        return cpfFormatado;
+    };
+
+    const handleSetNome = (e) => {
+        const name = e.target.value;
+        setNome(name.toUpperCase());
+    };
+
+    const handleSetCpf = (e) => {
+        const cpf = e.target.value;
+        const cpfFormatado = formatarCpf(cpf);
+        setCpfUsuario(cpfFormatado);
+    };
+
     if (carregando) {
-        return <div className='loading'>Carregando...</div>;
+        return <div className="loading">Carregando...</div>;
     }
 
     if (erro) {
-        return <div className='error'>Erro: {erro}</div>;
+        return <div className="error">Erro: {erro}</div>;
     }
 
     return (
@@ -104,7 +146,7 @@ const EditUser = ({ atualizarUsuario }) => {
                     <input
                         type="text"
                         value={nome}
-                        onChange={(e) => setNome(e.target.value)}
+                        onChange={(e) => handleSetNome(e)}
                         required
                     />
                 </div>
@@ -114,10 +156,11 @@ const EditUser = ({ atualizarUsuario }) => {
                     <input
                         type="text"
                         value={cpfUsuario}
-                        onChange={(e) => setCpfUsuario(e.target.value)} // Permite editar o CPF
+                        onChange={(e) => handleSetCpf(e)} // Permite editar o CPF
                         required
                     />
                 </div>
+                {erroMsg && <p className='erro-msg'>Erro: {erroMsg}</p>}
                 <button type="submit" className="button-primary">
                     Salvar
                 </button>
@@ -128,6 +171,7 @@ const EditUser = ({ atualizarUsuario }) => {
 
 EditUser.propTypes = {
     atualizarUsuario: PropTypes.func.isRequired,
+    usuarios: PropTypes.array.isRequired,
 };
 
 export default EditUser;

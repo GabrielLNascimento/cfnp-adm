@@ -86,7 +86,7 @@ nav div {
     color: #333;
 }
 
-.input-data input[type="date"] {
+.input-data input[type='date'] {
     font-size: 16px;
     padding: 8px;
     border-radius: 5px;
@@ -108,4 +108,43 @@ nav div {
 
 .error {
     color: red;
+}
+
+.container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.dropdown {
+    position: absolute;
+    top: 25%;
+    width: 50%;
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f0f0;
 }

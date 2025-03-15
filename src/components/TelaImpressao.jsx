@@ -5,7 +5,16 @@ const TelaImpressao = ({ observacoes, nomeAluno, onClose, cpfAluno }) => {
     return (
         <div className="tela-impressao">
             <div className="conteudo-impressao">
-                <h1>{nomeAluno} - {cpfAluno}</h1>{' '}
+                <div>
+                    <img
+                        src="/cabecalho.png"
+                        alt="Cabeçalho"
+                        className="cabecalho-imagem"
+                    />
+                </div>
+                <h1>
+                    {nomeAluno} - {cpfAluno}
+                </h1>{' '}
                 <table>
                     <thead>
                         <tr>
@@ -30,6 +39,13 @@ const TelaImpressao = ({ observacoes, nomeAluno, onClose, cpfAluno }) => {
                         ))}
                     </tbody>
                 </table>
+                <div>
+                    <img
+                        src="/rodape.png"
+                        alt="Rodapé"
+                        className="rodape-imagem"
+                    />
+                </div>
                 <button onClick={onClose}>Fechar</button>
                 <button onClick={() => window.print()}>Imprimir</button>
             </div>

@@ -35,3 +35,8 @@
     font-size: 18px;
     padding: 5px 10px;
 }
+
+.erro-msg {
+    color: red;
+    font-weight: bold;
+}

@@ -20,9 +20,26 @@ const App = () => {
     const [carregando, setCarregando] = useState(true);
     const [erro, setErro] = useState(null);
     const [termoPesquisa, setTermoPesquisa] = useState('');
+    const [opcoesFiltradas, setOpcoesFiltradas] = useState([]);
+    const [mostrarDropdown, setMostrarDropdown] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [userRole, setUserRole] = useState(null); // Estado para armazenar a role do usuário
     const navigate = useNavigate();
+
+    const opcoesFiltro = [
+        'Medalha de Prata 1º Trimestre',
+        'Medalha de Prata 2º Trimestre',
+        'Medalha de Prata 3º Trimestre',
+        'Medalha de Ouro',
+        'Medalha de Honra ao Mérito',
+        'Brasão Legionário Categoria Bronze',
+        'Brasão Legionário Categoria Prata',
+        'Brasão Legionário Categoria Ouro',
+        'Intervenção Pedagógica: -40',
+        'Intervenção Pedagógica: -80',
+        'Matrícula Condicionada: -120',
+        'Transferência Compulsória: -200',
+    ];
 
     // Função para decodificar o token e obter a role
     const decodificarToken = (token) => {
@@ -211,6 +228,27 @@ const App = () => {
         });
     };
 
+    const filtrarOpcoes = (termo) => {
+        if (!termo) {
+            setOpcoesFiltradas([]);
+            setMostrarDropdown(false);
+            return;
+        }
+
+        const filtradas = opcoesFiltro.filter((opcao) =>
+            opcao.toLowerCase().includes(termo.toLowerCase())
+        );
+
+        setOpcoesFiltradas(filtradas);
+        setMostrarDropdown(true);
+    };
+
+    // Função para autocompletar o campo de pesquisa ao selecionar uma opção
+    const selecionarOpcao = (opcao) => {
+        setTermoPesquisa(opcao);
+        setMostrarDropdown(false); // Fecha o dropdown após selecionar
+    };
+
     // Função para atualizar um usuário
     const atualizarUsuario = (cpf, novoNome) => {
         setUsuarios((prevUsuarios) =>
@@ -292,11 +330,36 @@ const App = () => {
                                         type="text"
                                         placeholder="Pesquisar por nome, CPF ou observações..."
                                         value={termoPesquisa}
-                                        onChange={(e) =>
-                                            setTermoPesquisa(e.target.value)
-                                        }
+                                        onChange={(e) => {
+                                            setTermoPesquisa(e.target.value);
+                                            filtrarOpcoes(e.target.value);
+                                        }}
+                                        onFocus={() => {
+                                            if (termoPesquisa) {
+                                                filtrarOpcoes(termoPesquisa); // Mostra o dropdown ao focar no campo
+                                            }
+                                        }}
                                     />
-
+                                    {mostrarDropdown &&
+                                        opcoesFiltradas.length > 0 && (
+                                            <div className="dropdown">
+                                                {opcoesFiltradas.map(
+                                                    (opcao, index) => (
+                                                        <div
+                                                            key={index}
+                                                            className="dropdown-item"
+                                                            onClick={() =>
+                                                                selecionarOpcao(
+                                                                    opcao
+                                                                )
+                                                            }
+                                                        >
+                                                            {opcao}
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        )}
                                     {/* Container para os inputs de data */}
                                     <div className="container-datas">
                                         <div className="input-data">
@@ -342,7 +405,10 @@ const App = () => {
                     path="/formusers"
                     element={
                         <ProtectedRoute>
-                            <FormUsers adicionarUsuario={adicionarUsuario} />
+                            <FormUsers
+                                adicionarUsuario={adicionarUsuario}
+                                usuarios={usuarios}
+                            />
                         </ProtectedRoute>
                     }
                 />
@@ -366,7 +432,10 @@ const App = () => {
                     path="/usuarios/:cpf/editar"
                     element={
                         <ProtectedRoute>
-                            <EditUser atualizarUsuario={atualizarUsuario} />
+                            <EditUser
+                                atualizarUsuario={atualizarUsuario}
+                                usuarios={usuarios}
+                            />
                         </ProtectedRoute>
                     }
                 />

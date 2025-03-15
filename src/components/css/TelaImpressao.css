@@ -56,6 +56,14 @@
     background-color: #0056b3;
 }
 
+.cabecalho-imagem {
+    display: none;
+}
+
+.rodape-imagem {
+    display: none;
+}
+
 /* Estilos para impressão */
 @media print {
     body * {
@@ -71,6 +79,7 @@
         background-color: white;
         box-shadow: none;
         border: none;
+        border: 10px solid red;
     }
 
     .conteudo-impressao,
@@ -79,12 +88,16 @@
     }
 
     .conteudo-impressao {
+        width: 100%;
+        max-width: 100%;
+        padding-top: 130px;
+        margin: 0;
         box-shadow: none;
         border: none;
     }
 
     .conteudo-impressao button {
-        display: none; /* Oculta os botões na impressão */
+        display: none;
     }
 
     .conteudo-impressao h1 {
@@ -92,5 +105,27 @@
         margin-bottom: 20px;
         font-size: 24px;
         color: #333;
+    }
+
+    .cabecalho-imagem {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    .rodape-imagem {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
     }
 }
